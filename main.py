@@ -1,14 +1,12 @@
 # Pomodoro Timer prototype
+# This is a prototype for a Pomodoro Timer circuit board
 
 import time
-import sys
+#import sys
 from machine import Pin
 
-# This is a prototype for a Pomodoro Timer circuit
-led = Pin(6, Pin.OUT)
-
-#functions
-def timer(time_sec):
+#Functions
+def Timer(time_sec):
     while time_sec:
         mins, secs = divmod(time_sec, 60)
         timeformat = '{:02d}:{:02d}'.format(mins, secs)
@@ -16,25 +14,66 @@ def timer(time_sec):
         print(timeformat)
         time.sleep(1)
         time_sec -= 1
+        #TO-DO check for button state to pause/reset
+        stopp = input('leave loop?')
+        if stopp == 'yes':
+            raise RestartExecution
+    print("timer stop")#sound the buzzer
 
-    print("stop")
+def Pomodoro():
+    print('Pomodoro Start')
+    print(f'Focus for {pomodoroTimer} minutes')
+    led.on()
+    Timer(pomodoroTimer)#*60 for debug
+
+def Breaks(count):
+    if count == 4:
+        msg = 'Long break Started'
+        minutes = longBreak
+    else:
+        msg = 'Break Started'
+        minutes = shortBreak
+    print(msg)
+    print(f'Unwind yourself for {minutes} minutes')
+    led.off()
+    Timer(minutes)#*60 for debug
+    pomodoroCount = 0
+
+#Classes
+class RestartExecution(RuntimeError):
+    pass
+
+#IO Configuration
+led = Pin(6, Pin.OUT)
 
 #Configuration
 pomodoroTimer = 25
-breakTimer = 5
-longBreak = breakTimer * 2
+shortBreak = 5
+longBreak = shortBreak * 2
+longAfterPomodoros = 4
+pomodoroCount = 0
 
 while (True):
-   pomodoroCount = 0
-   startTimer = input('start timer? y/n')
-   if (startTimer.lower() == 'y'):
-       print('pomodoro timer started')
-       led.on()
-       timer(pomodoroTimer)#*60
-       pomodoroCount+=1
-       timer(breakTimer)#*60
-   else:
-       print('pomodoro timer not started')
-       led.off()
+    selection = input('start timer: 1 auto | 2 manual | 3 config')
+    if selection == '1':
+        while(True):
+            try:
+                Pomodoro()
+                pomodoroCount+=1
+                Breaks(pomodoroCount)
+            except RestartExecution:
+                break
+    if selection == '2':
+        while(True):
+            try:
+                input('Press enter to start Pomodoro')
+                Pomodoro()
+                input('Press enter to start break')
+                Breaks(pomodoroCount)
+            except RestartExecution:
+                break
+    else:
+            print('pomodoro timer configuration not available')
+            led.off()
 
 
