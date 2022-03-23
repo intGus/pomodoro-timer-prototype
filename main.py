@@ -27,7 +27,7 @@ def Pomodoro():
     Timer(pomodoroTimer)#*60 for debug
 
 def Breaks(count):
-    if count == 4:
+    if count % longAfterPomodoros == 0:
         msg = 'Long break Started'
         minutes = longBreak
     else:
@@ -37,7 +37,6 @@ def Breaks(count):
     print(f'Unwind yourself for {minutes} minutes')
     led.off()
     Timer(minutes)#*60 for debug
-    pomodoroCount = 0
 
 #Classes
 class RestartExecution(RuntimeError):
@@ -68,6 +67,7 @@ while (True):
             try:
                 input('Press enter to start Pomodoro')
                 Pomodoro()
+                pomodoroCount+=1
                 input('Press enter to start break')
                 Breaks(pomodoroCount)
             except RestartExecution:
