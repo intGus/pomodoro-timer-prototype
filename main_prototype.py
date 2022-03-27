@@ -1,9 +1,8 @@
-# Pomodoro Timer main.py
-
-# This is the main file for a Pomodoro Timer in micropython
-# running on a RP2040 compatible circuit board.
+# Pomodoro Timer prototype
+# This is a prototype for a Pomodoro Timer circuit board
 
 import time
+#import sys
 from machine import Pin
 
 #Functions
@@ -11,6 +10,7 @@ def Timer(time_sec):
     while time_sec:
         mins, secs = divmod(time_sec, 60)
         timeformat = '{:02d}:{:02d}'.format(mins, secs)
+        #sys.stdout.write('\r' + timeformat + 's')
         print(timeformat)
         time.sleep(1)
         time_sec -= 1
@@ -23,7 +23,7 @@ def Timer(time_sec):
 def Pomodoro():
     print('Pomodoro Start')
     print(f'Focus for {pomodoroTimer} minutes')
-    led.on()
+    #led.on()
     Timer(pomodoroTimer)#*60 for debug
 
 def Breaks(count):
@@ -35,7 +35,7 @@ def Breaks(count):
         minutes = shortBreak
     print(msg)
     print(f'Unwind yourself for {minutes} minutes')
-    led.off()
+    #led.off()
     Timer(minutes)#*60 for debug
 
 #Classes
@@ -43,8 +43,8 @@ class RestartExecution(RuntimeError):
     pass
 
 #IO Configuration
-led = Pin(6, Pin.OUT)
-button1 = Pin(18, Pin.IN)
+#led = Pin(6, Pin.OUT)
+#button1 = Pin(18, Pin.IN)
 
 #Configuration
 pomodoroTimer = 25
@@ -75,4 +75,4 @@ while (True):
                 break
     elif selection == '3':
             print('pomodoro timer configuration not available')
-            led.off()
+            #led.off()
