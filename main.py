@@ -15,8 +15,8 @@ def Timer(time_sec):
         time.sleep(1)
         time_sec -= 1
         #TO-DO check for button state to pause/reset
-        stopp = input('leave loop?')
-        if stopp == 'yes':
+        if button1.value() == 1:
+            time.sleep(0.5)
             raise RestartExecution
     print("timer stop")#sound the buzzer
 
@@ -45,6 +45,8 @@ class RestartExecution(RuntimeError):
 #IO Configuration
 led = Pin(6, Pin.OUT)
 button1 = Pin(18, Pin.IN)
+button2 = Pin(21, Pin.IN)
+button3 = Pin(15, Pin.IN)
 
 #Configuration
 pomodoroTimer = 25
@@ -52,18 +54,23 @@ shortBreak = 5
 longBreak = shortBreak * 2
 longAfterPomodoros = 4
 pomodoroCount = 0
+msg = 'start timer: 1 auto | 2 manual | 3 config'
 
+#main
+print(msg)
 while (True):
-    selection = input('start timer: 1 auto | 2 manual | 3 config')
-    if selection == '1':
+    if button1.value() == 1:
+        time.sleep(0.5)
         while(True):
             try:
                 Pomodoro()
                 pomodoroCount+=1
                 Breaks(pomodoroCount)
             except RestartExecution:
+                print(msg)
                 break
-    elif selection == '2':
+    elif button2.value() == 1:
+        time.sleep(0.5)
         while(True):
             try:
                 input('Press enter to start Pomodoro')
@@ -72,7 +79,10 @@ while (True):
                 input('Press enter to start break')
                 Breaks(pomodoroCount)
             except RestartExecution:
+                print(msg)
                 break
-    elif selection == '3':
-            print('pomodoro timer configuration not available')
-            led.off()
+    elif button3.value() == 1:
+        time.sleep(0.5)
+        print('pomodoro timer configuration not available')
+        print(msg)
+        led.off()
