@@ -28,12 +28,12 @@ def Pomodoro():
 
 def Breaks(count):
     if count % longAfterPomodoros == 0:
-        msg = 'Long break Started'
+        msgBreak = 'Long break Started'
         minutes = longBreak
     else:
-        msg = 'Break Started'
+        msgBreak = 'Break Started'
         minutes = shortBreak
-    print(msg)
+    print(msgBreak)
     print(f'Unwind yourself for {minutes} minutes')
     led.off()
     Timer(minutes)#*60 for debug
