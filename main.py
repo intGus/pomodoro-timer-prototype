@@ -5,13 +5,14 @@
 
 import time
 from machine import Pin
+from lcd1602 import LCD
 
 #Functions
 def Timer(time_sec):
     while time_sec:
         mins, secs = divmod(time_sec, 60)
         timeformat = '{:02d}:{:02d}'.format(mins, secs)
-        print(timeformat)
+        lcd.message('\n' + timeformat)
         time.sleep(1)
         time_sec -= 1
         #TO-DO check for button state to pause/reset
@@ -23,7 +24,9 @@ def Timer(time_sec):
 def Pomodoro():
     print('Pomodoro Start')
     print(f'Focus for {pomodoroTimer} minutes')
-    led.on()
+    #led.on()
+    lcd.clear()
+    lcd.message('   Stay Focus   ')
     Timer(pomodoroTimer)#*60 for debug
 
 def Breaks(count):
@@ -33,9 +36,10 @@ def Breaks(count):
     else:
         msgBreak = 'Break Started'
         minutes = shortBreak
-    print(msgBreak)
+    lcd.clear()
+    lcd.message(msgBreak)
     print(f'Unwind yourself for {minutes} minutes')
-    led.off()
+    #led.off()
     Timer(minutes)#*60 for debug
 
 #Classes
@@ -43,9 +47,10 @@ class RestartExecution(RuntimeError):
     pass
 
 #IO Configuration
+lcd = LCD()
 led = Pin(6, Pin.OUT)
-button1 = Pin(18, Pin.IN)
-button2 = Pin(21, Pin.IN)
+button1 = Pin(7, Pin.IN)
+button2 = Pin(11, Pin.IN)
 button3 = Pin(15, Pin.IN)
 
 #Configuration
@@ -54,10 +59,13 @@ shortBreak = 5
 longBreak = shortBreak * 2
 longAfterPomodoros = 4
 pomodoroCount = 0
-msg = 'start timer: 1 auto | 2 manual | 3 config'
+msg = ' Pomodoro Timer \nauto|manual|conf'
 
 #main
-print(msg)
+lcd.message(' Pomodoro Timer \n  version 0.1')
+time.sleep(3)
+lcd.clear()
+lcd.message(msg)
 while (True):
     if button1.value() == 1:
         time.sleep(0.5)
@@ -67,7 +75,7 @@ while (True):
                 pomodoroCount+=1
                 Breaks(pomodoroCount)
             except RestartExecution:
-                print(msg)
+                lcd.message(msg)
                 break
     elif button2.value() == 1:
         time.sleep(0.5)
@@ -79,10 +87,10 @@ while (True):
                 input('Press enter to start break')
                 Breaks(pomodoroCount)
             except RestartExecution:
-                print(msg)
+                lcd.message(msg)
                 break
     elif button3.value() == 1:
         time.sleep(0.5)
         print('pomodoro timer configuration not available')
-        print(msg)
+        lcd.message(msg)
         led.off()
